@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">CleveroadTask</string>
+    <string name="main">главная</string>
+    <string name="favorite">избранное</string>
+</resources>
