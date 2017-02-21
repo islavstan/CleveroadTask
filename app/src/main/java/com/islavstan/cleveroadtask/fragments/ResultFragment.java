@@ -2,6 +2,8 @@ package com.islavstan.cleveroadtask.fragments;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -11,12 +13,14 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.islavstan.cleveroadtask.R;
+import com.islavstan.cleveroadtask.db.DBMethods;
 import com.islavstan.cleveroadtask.listeners.UserActionsListener;
 import com.islavstan.cleveroadtask.adapters.MyRecyclerViewAdapter;
 import com.islavstan.cleveroadtask.model.QueriesData;
 import com.islavstan.cleveroadtask.presenter.ResultPresenter;
 import com.islavstan.cleveroadtask.presenter.ResultPresenterImpl;
 import com.islavstan.cleveroadtask.view.FragmentView;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,12 +31,16 @@ public class ResultFragment extends Fragment implements FragmentView {
     RecyclerView recyclerView;
     MyRecyclerViewAdapter adapter;
     ResultPresenter presenter;
+    DBMethods db;
+    Picasso picasso;
 
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_result, container, false);
         presenter = new ResultPresenterImpl(this);
+        db = new DBMethods(getActivity());
+        picasso = Picasso.with(getActivity());
         loadUI(v);
         loadData();
         return v;
@@ -51,18 +59,47 @@ public class ResultFragment extends Fragment implements FragmentView {
 
     UserActionsListener listener = new UserActionsListener() {
         @Override
-        public void openImage() {
-            Toast.makeText(getActivity(), "press", Toast.LENGTH_SHORT).show();
+        public void openImage(QueriesData data) {
+            FragmentManager manager = getFragmentManager();
+            FragmentTransaction transaction = manager.beginTransaction();
+            PhotoFragment fragment = new PhotoFragment();
+            Bundle bundle = new Bundle();
+            bundle.putString("src", data.getPagemap().getCseThumbnailData().get(0).getSrc());
+            fragment.setArguments(bundle);
+            transaction.replace(R.id.container,fragment,"photo");
+            transaction.addToBackStack(null);
+            transaction.commit();
+        }
+
+        @Override
+        public void saveToDB(QueriesData data) {
+            presenter.saveToDB(data, db, picasso);
+
+        }
+
+        @Override
+        public void deleteFromDB(QueriesData data) {
+           presenter.deleteFromDb(data, db);
         }
     };
 
     @Override
     public void loadData() {
-        presenter.loadData(adapter,"");
+        presenter.loadData(adapter, "");
+    }
+
+    @Override
+    public void showSuccessSaveToast() {
+        Toast.makeText(getActivity(), getResources().getString(R.string.add_to_favorine), Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void showSuccessDeleteToast() {
+        Toast.makeText(getActivity(), getResources().getString(R.string.delete_from_favorine), Toast.LENGTH_SHORT).show();
     }
 
     public void update(String textSearch) {
-        presenter.loadData(adapter,textSearch);
+        presenter.loadData(adapter, textSearch);
 
     }
 }

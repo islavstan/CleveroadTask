@@ -54,7 +54,7 @@ public class MyViewPagerAdapter  extends FragmentStatePagerAdapter {
 
     }
 
-    public void RefreshTab(int position, String textSearch) {
+    public void refreshTab(int position, String textSearch) {
         switch (position) {
             case 0:
                 ResultFragment rf = (ResultFragment) this.getItem(position);

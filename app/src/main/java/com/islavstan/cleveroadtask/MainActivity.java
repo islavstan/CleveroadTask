@@ -1,28 +1,15 @@
 package com.islavstan.cleveroadtask;
 
-import android.app.SearchManager;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 
 import com.islavstan.cleveroadtask.adapters.MyViewPagerAdapter;
-import com.islavstan.cleveroadtask.api.ApiClient;
-import com.islavstan.cleveroadtask.model.Queries;
-import com.islavstan.cleveroadtask.model.QueriesData;
-import com.islavstan.cleveroadtask.point.GetDataPoint;
+import com.islavstan.cleveroadtask.db.DBMethods;
 import com.islavstan.cleveroadtask.view.MainView;
 import com.lapism.searchview.SearchView;
-
-import org.json.JSONObject;
-
-import java.util.List;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity implements MainView {
 
@@ -30,11 +17,15 @@ public class MainActivity extends AppCompatActivity implements MainView {
     ViewPager viewPager;
     SearchView searchView;
     int tabPositionSelected = 0;
+    DBMethods db;
+    int rowCount;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        db = new DBMethods(this);
+        rowCount = db.getCount();
         loadUI();
         loadSearchView();
 
@@ -53,6 +44,7 @@ public class MainActivity extends AppCompatActivity implements MainView {
         adapter = new MyViewPagerAdapter
                 (getSupportFragmentManager(), tabLayout.getTabCount());
         viewPager.setAdapter(adapter);
+        viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
@@ -75,6 +67,7 @@ public class MainActivity extends AppCompatActivity implements MainView {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 viewPager.setCurrentItem(tab.getPosition());
+
             }
 
             @Override
@@ -100,7 +93,7 @@ public class MainActivity extends AppCompatActivity implements MainView {
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                adapter.RefreshTab(tabPositionSelected, newText);
+                adapter.refreshTab(tabPositionSelected, newText);
 
 
                 return false;
