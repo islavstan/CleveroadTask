@@ -51,7 +51,6 @@ public class ResultFragment extends Fragment implements Callback<Queries>, Fragm
         picasso = Picasso.with(getActivity());
         loadUI(v);
         loadData();
-
         return v;
 
     }
@@ -115,8 +114,8 @@ public class ResultFragment extends Fragment implements Callback<Queries>, Fragm
         }
 
         @Override
-        public void deleteFromDB(QueriesData data) {
-            presenter.deleteFromDb(data, db);
+        public void deleteFromDB(int id, int pos) {
+            presenter.deleteFromDb(id, db);
         }
     };
 

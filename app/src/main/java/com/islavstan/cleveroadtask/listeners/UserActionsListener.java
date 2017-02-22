@@ -1,6 +1,7 @@
 package com.islavstan.cleveroadtask.listeners;
 
 
+import com.islavstan.cleveroadtask.adapters.MyFavoriteRecAdapter;
 import com.islavstan.cleveroadtask.model.QueriesData;
 
 public interface UserActionsListener {
@@ -8,6 +9,6 @@ public interface UserActionsListener {
 
     void saveToDB(QueriesData data);
 
-    void deleteFromDB(QueriesData data);
+    void deleteFromDB(int id, int position);
 }
 

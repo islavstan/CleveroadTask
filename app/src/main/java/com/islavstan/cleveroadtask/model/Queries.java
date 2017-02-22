@@ -11,10 +11,10 @@ public class Queries {
   List<QueriesData>queriesDataList;
 
    @SerializedName("queries")
-   Qr qr;
+   IndexRequest indexRequest;
 
-    public Qr getQr() {
-        return qr;
+    public IndexRequest getIndexRequest() {
+        return indexRequest;
     }
 
     public List<QueriesData> getQueriesDataList() {

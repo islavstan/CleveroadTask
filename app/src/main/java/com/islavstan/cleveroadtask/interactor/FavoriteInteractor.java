@@ -6,9 +6,6 @@ import com.islavstan.cleveroadtask.db.DBMethods;
 import com.islavstan.cleveroadtask.model.QueriesData;
 import com.squareup.picasso.Picasso;
 
-/**
- * Created by islav on 21.02.2017.
- */
 
 public interface FavoriteInteractor {
 
@@ -19,6 +16,8 @@ public interface FavoriteInteractor {
 
     void loadData(MyFavoriteRecAdapter adapter, String searchRequest, DBMethods db);
 
-    void deleteFromDb(QueriesData data, DBMethods db, FavoriteFinishedListener listener);
+    void addData(MyFavoriteRecAdapter adapter, DBMethods db, int index);
+
+    void deleteFromDb(int id, DBMethods db, FavoriteFinishedListener listener, int position, MyFavoriteRecAdapter adapter);
 }
 

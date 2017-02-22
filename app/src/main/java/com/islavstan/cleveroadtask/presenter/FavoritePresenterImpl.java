@@ -33,8 +33,13 @@ public class FavoritePresenterImpl implements FavoritePresenter, FavoriteInterac
     }
 
     @Override
-    public void deleteFromDb(QueriesData data, DBMethods db) {
-        favoriteInteractor.deleteFromDb(data, db, this);
+    public void deleteFromDb(int id, DBMethods db, int position, MyFavoriteRecAdapter adapter) {
+        favoriteInteractor.deleteFromDb(id, db, this, position, adapter);
+    }
+
+    @Override
+    public void loadMore(int index, DBMethods db, MyFavoriteRecAdapter adapter) {
+        favoriteInteractor.addData(adapter, db, index);
     }
 
     @Override

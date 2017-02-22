@@ -71,7 +71,7 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
                     queriesDataList.get(holder.getAdapterPosition()).setSelected(b);
                 } else {
                     queriesDataList.get(holder.getAdapterPosition()).setSelected(b);
-                    mItemListener.deleteFromDB(queriesDataList.get(holder.getAdapterPosition()));
+                    mItemListener.deleteFromDB(queriesDataList.get(holder.getAdapterPosition()).getId(), holder.getAdapterPosition());
                 }
             }
         });

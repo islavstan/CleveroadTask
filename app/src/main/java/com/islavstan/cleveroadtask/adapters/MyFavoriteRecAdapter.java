@@ -30,14 +30,14 @@ public class MyFavoriteRecAdapter extends RecyclerView.Adapter<MyFavoriteRecAdap
     private List<QueriesData> queriesDataList;
     private UserActionsListener mItemListener;
     String root = Environment.getExternalStorageDirectory().toString();
-    int next = 10;
-   FavoriteFragment context;
+    MyRecyclerViewAdapter.OnLoadMoreListener loadMoreListener;
+    boolean isLoading = false, isMoreDataAvailable = true;
 
     List<QueriesData> allItemsList = new ArrayList<>();
-    public MyFavoriteRecAdapter(List<QueriesData> queriesDataList, UserActionsListener mItemListener, FavoriteFragment context) {
+
+    public MyFavoriteRecAdapter(List<QueriesData> queriesDataList, UserActionsListener mItemListener) {
         this.queriesDataList = queriesDataList;
         this.mItemListener = mItemListener;
-        this.context = context;
 
     }
 
@@ -53,43 +53,71 @@ public class MyFavoriteRecAdapter extends RecyclerView.Adapter<MyFavoriteRecAdap
     }
 
     @Override
-    public void onBindViewHolder(final MyFavoriteRecAdapter.CustomViewHolder holder, int position) {
+    public void onBindViewHolder(final MyFavoriteRecAdapter.CustomViewHolder holder, final int position) {
+        if (position >= getItemCount() - 1 && isMoreDataAvailable && !isLoading && loadMoreListener != null) {
+            isLoading = true;
+            loadMoreListener.onLoadMore();
+        }
+
         final QueriesData data = queriesDataList.get(position);
         holder.name.setText(data.getTitle());
         Uri uri = Uri.fromFile(new File(root + "/CleveroadTask/images/" + data.getImagePath()));
         Picasso.with(holder.image.getContext()).load(uri).placeholder(R.drawable.ic_picture).into(holder.image);
 
+        holder.checkBox.setOnCheckedChangeListener(null);
+        holder.checkBox.setChecked(data.isSelected());
+        holder.checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                int holderPos = holder.getAdapterPosition();
+                queriesDataList.get(holderPos).setSelected(b);
+                mItemListener.deleteFromDB(queriesDataList.get(holderPos).getId(), holderPos);
+            }
+        });
+    }
+
+
+    public void deleteItem(int position) {
+        Log.d("stas", position + " - pos");
+        Log.d("stas", queriesDataList.size() + " до удаления");
+        queriesDataList.remove(position);
+        Log.d("stas", queriesDataList.size() + " после удаления");
+        notifyItemRemoved(position);
     }
 
     public void loadData(List<QueriesData> queriesDatas) {
-      /*  if (queriesDatas.size() != 0) {
+        if (queriesDatas.size() != 0) {
             queriesDataList.clear();
             queriesDataList.addAll(queriesDatas);
             notifyDataSetChanged();
-        }*/
-
-        allItemsList = queriesDatas;
-        for (int i = 0; i < next; i++) {
-            queriesDataList.add(allItemsList.get(i));
+            isLoading = false;
         }
+    }
+
+    public void addMore(List<QueriesData> queriesDatas) {
+        queriesDataList.addAll(queriesDatas);
         notifyDataSetChanged();
-
+        isLoading = false;
     }
- /*   public void loadMore() {
-       *//* if(queriesDataList.size()!=allItemsList.size()) {
-            for (int i = next; i < next + 10; i++) {
-                queriesDataList.add(allItemsList.get(i));
-                notifyItemInserted(i);
-                next++;
-            }
 
+    public void setNoMoreItem() {
 
-        }*//*
-
-
-        context.setLoading(false);
+        isLoading = true;
     }
-*/
+
+    public void onLoad() {
+
+        isLoading = false;
+    }
+
+
+    public interface OnLoadMoreListener {
+        void onLoadMore();
+    }
+
+    public void setLoadMoreListener(MyRecyclerViewAdapter.OnLoadMoreListener loadMoreListener) {
+        this.loadMoreListener = loadMoreListener;
+    }
 
 
     @Override
@@ -110,18 +138,6 @@ public class MyFavoriteRecAdapter extends RecyclerView.Adapter<MyFavoriteRecAdap
             image = (ImageView) itemView.findViewById(R.id.image);
             checkBox = (CheckBox) itemView.findViewById(R.id.checkbox);
             itemView.setOnClickListener(this);
-            checkBox.setChecked(true);
-            checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                @Override
-                public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-
-                    mItemListener.deleteFromDB(queriesDataList.get(getAdapterPosition()));
-                    queriesDataList.remove(getAdapterPosition());
-                    notifyItemRemoved(getAdapterPosition());
-
-                }
-
-            });
 
 
         }

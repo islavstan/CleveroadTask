@@ -1,32 +1,19 @@
 package com.islavstan.cleveroadtask.interactor;
 
-import android.app.LoaderManager;
-import android.content.Loader;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
-import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
 
 import com.islavstan.cleveroadtask.adapters.MyRecyclerViewAdapter;
-import com.islavstan.cleveroadtask.api.ApiClient;
-import com.islavstan.cleveroadtask.api.ApiConstant;
 import com.islavstan.cleveroadtask.db.DBMethods;
 import com.islavstan.cleveroadtask.model.Queries;
 import com.islavstan.cleveroadtask.model.QueriesData;
 import com.islavstan.cleveroadtask.model.RequestData;
-import com.islavstan.cleveroadtask.point.GetDataPoint;
 import com.squareup.picasso.Picasso;
 
-import org.json.JSONObject;
-
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.lang.annotation.Target;
 import java.util.List;
 import java.util.Random;
 
@@ -38,7 +25,7 @@ public class ResultInteractorImpl implements ResultInteractor {
     @Override
     public void loadData(MyRecyclerViewAdapter adapter, Queries queries) {
         List<QueriesData> queriesDatas = queries.getQueriesDataList();
-        RequestData data = queries.getQr().getRequestDatas().get(0);
+        RequestData data = queries.getIndexRequest().getRequestDatas().get(0);
         int startIndex = data.getStartIndex();
         if (startIndex == 1) {
             if (queriesDatas != null) {

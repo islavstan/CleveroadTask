@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import com.islavstan.cleveroadtask.model.QueriesData;
 
@@ -30,13 +31,14 @@ public class DBMethods {
     }
 
     public void delete(int id) {
-        db.delete("Favorite", "id = "+id, null);
-
+        db.delete("Favorite", "id = " + id, null);
     }
 
-    public List<QueriesData> getContentFromDB() {
+
+    public List<QueriesData> getContentFromDB(int indexStart) {
         List<QueriesData> contentList = new ArrayList();
-        String query = "SELECT  * FROM Favorite";
+
+        String query = "SELECT  * FROM Favorite LIMIT " + indexStart + ", 10";
         Cursor cursor = db.rawQuery(query, null);
         if (cursor.moveToFirst()) {
             do {
@@ -44,6 +46,7 @@ public class DBMethods {
                 data.setTitle(cursor.getString(cursor.getColumnIndex("name")));
                 data.setImagePath(cursor.getString(cursor.getColumnIndex("photo_path")));
                 data.setId(cursor.getInt(cursor.getColumnIndex("id")));
+                data.setSelected(true);
                 contentList.add(data);
             }
             while (cursor.moveToNext());

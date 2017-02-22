@@ -29,7 +29,7 @@ public class ResultPresenterImpl implements ResultPresenter, ResultInteractor.Re
     }
 
     @Override
-    public void deleteFromDb(QueriesData data, DBMethods db) {
+    public void deleteFromDb(int id, DBMethods db) {
 
     }
 

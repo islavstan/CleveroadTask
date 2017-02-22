@@ -6,7 +6,7 @@ import java.util.List;
 
 
 
-public class Qr {
+public class IndexRequest {
     @SerializedName("request")
     List<RequestData> requestDatas;
 

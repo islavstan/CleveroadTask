@@ -7,6 +7,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,7 +36,6 @@ public class FavoriteFragment  extends Fragment implements FragmentView {
     FavoritePresenter presenter;
     DBMethods db;
     LinearLayoutManager mLayoutManager;
-    private boolean isLoading = false;
 
 
     @Override
@@ -50,35 +50,43 @@ public class FavoriteFragment  extends Fragment implements FragmentView {
     }
 
     public void update(String textSearch) {
+        if (textSearch.equals("")) {
+            loadData();
+        }
+        adapter.onLoad();
+        adapter.notifyDataSetChanged();
     }
 
 
     @Override
     public void loadUI(View v) {
         recyclerView = (RecyclerView) v.findViewById(R.id.recycler);
-        adapter = new MyFavoriteRecAdapter(queriesDataList, listener, this);
+        adapter = new MyFavoriteRecAdapter(queriesDataList, listener);
         mLayoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(adapter);
-
-      /*  recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+        adapter.setLoadMoreListener(new MyRecyclerViewAdapter.OnLoadMoreListener() {
             @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-                int visibleItemCount = mLayoutManager.getChildCount();//смотрим сколько элементов на экране
-                int totalItemCount = mLayoutManager.getItemCount();//сколько всего элементов
-                int firstVisibleItems = mLayoutManager.findFirstVisibleItemPosition();//какая позиция первого элемента
-                if (!isLoading) {
-                    if ((visibleItemCount + firstVisibleItems) >= totalItemCount) {
-                        isLoading = true;
-                        adapter.loadMore();
+            public void onLoadMore() {
+                recyclerView.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        int index = queriesDataList.size() - 1;
+                        //Log.d("stas", "loadMore(index)");
+                        if (index >= 10)
+                            loadMore(index);
                     }
-                }
+                });
             }
-        });*/
+        });
 
 
+    }
+
+    private void loadMore(int index) {
+
+        presenter.loadMore(index, db, adapter);
     }
 
 
@@ -91,7 +99,7 @@ public class FavoriteFragment  extends Fragment implements FragmentView {
             Bundle bundle = new Bundle();
             bundle.putString("srcFromDB", data.getImagePath());
             fragment.setArguments(bundle);
-            transaction.replace(R.id.container,fragment,"photo");
+            transaction.replace(R.id.container, fragment, "photo");
             transaction.addToBackStack(null);
             transaction.commit();
         }
@@ -103,8 +111,8 @@ public class FavoriteFragment  extends Fragment implements FragmentView {
         }
 
         @Override
-        public void deleteFromDB(QueriesData data) {
-            presenter.deleteFromDb(data, db);
+        public void deleteFromDB(int id, int position) {
+            presenter.deleteFromDb(id, db, position, adapter);
 
         }
     };
@@ -125,12 +133,5 @@ public class FavoriteFragment  extends Fragment implements FragmentView {
 
     }
 
-    public boolean isLoading() {
-        return isLoading;
-    }
-
-    public void setLoading(boolean loading) {
-        isLoading = loading;
-    }
 
 }
