@@ -2,10 +2,10 @@ package com.islavstan.cleveroadtask.api;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.islavstan.cleveroadtask.point.GetDataPoint;
 
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
-
 
 
 public class ApiClient {
@@ -18,8 +18,11 @@ public class ApiClient {
             Gson result = new GsonBuilder().create();
             retrofit = new Retrofit.Builder()
                     .addConverterFactory(GsonConverterFactory.create(result))
+                    .addCallAdapterFactory(SynchronousCallAdapterFactory.create())
                     .baseUrl(BASE_URL).build();
         }
         return retrofit;
     }
+
+
 }

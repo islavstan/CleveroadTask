@@ -5,6 +5,7 @@ import com.islavstan.cleveroadtask.db.DBMethods;
 import com.islavstan.cleveroadtask.fragments.ResultFragment;
 import com.islavstan.cleveroadtask.interactor.ResultInteractor;
 import com.islavstan.cleveroadtask.interactor.ResultInteractorImpl;
+import com.islavstan.cleveroadtask.model.Queries;
 import com.islavstan.cleveroadtask.model.QueriesData;
 import com.islavstan.cleveroadtask.view.FragmentView;
 import com.squareup.picasso.Picasso;
@@ -22,17 +23,6 @@ public class ResultPresenterImpl implements ResultPresenter, ResultInteractor.Re
         this.fragmentView = fragmentView;
     }
 
-
-    @Override
-    public void loadData(MyRecyclerViewAdapter adapter, String searchRequest) {
-        resultInteractor.loadData(adapter, searchRequest);
-    }
-
-    @Override
-    public void openImage() {
-
-    }
-
     @Override
     public void saveToDB(QueriesData data, DBMethods db, Picasso picasso) {
         resultInteractor.saveToDB(data, db, picasso, this);
@@ -41,6 +31,11 @@ public class ResultPresenterImpl implements ResultPresenter, ResultInteractor.Re
     @Override
     public void deleteFromDb(QueriesData data, DBMethods db) {
 
+    }
+
+    @Override
+    public void loadData(MyRecyclerViewAdapter adapter, Queries queries) {
+        resultInteractor.loadData(adapter,queries);
     }
 
     @Override

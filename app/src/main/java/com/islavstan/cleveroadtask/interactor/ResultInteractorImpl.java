@@ -1,7 +1,10 @@
 package com.islavstan.cleveroadtask.interactor;
 
+import android.app.LoaderManager;
+import android.content.Loader;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
+import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
 
@@ -26,50 +29,16 @@ import java.lang.annotation.Target;
 import java.util.List;
 import java.util.Random;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
+
 
 
 public class ResultInteractorImpl implements ResultInteractor {
 
     @Override
-    public void loadData(final MyRecyclerViewAdapter adapter, String searchRequest) {
-        if (searchRequest.equals("")) {
-
-        } else {
-            final GetDataPoint point = ApiClient.getRetrofit().create(GetDataPoint.class);
-            Call<Queries> call = point.getData(ApiConstant.key, ApiConstant.cx, searchRequest);
-            call.enqueue(new Callback<Queries>() {
-                @Override
-                public void onResponse(Call<Queries> call, Response<Queries> response) {
-                    if (response.isSuccessful()) {
-                        Queries queries = response.body();
-                        List<QueriesData> queriesDatas = queries.getQueriesDataList();
-                        if (queriesDatas != null)
-                            adapter.loadData(queriesDatas);
-
-
-                    } else {
-                        try {
-                            JSONObject jObjError = new JSONObject(response.errorBody().string());
-                            Log.d("stas", "GetDataPoint error = " + jObjError.getString("error"));
-
-                        } catch (Exception e) {
-                            Log.d("stas", e.getMessage());
-                        }
-
-                    }
-
-                }
-
-                @Override
-                public void onFailure(Call<Queries> call, Throwable t) {
-                    Log.d("stas", "false");
-                }
-
-
-            });
+    public void loadData(MyRecyclerViewAdapter adapter, Queries queries) {
+        List<QueriesData> queriesDatas = queries.getQueriesDataList();
+        if (queriesDatas != null) {
+            adapter.loadData(queriesDatas);
         }
     }
 
@@ -120,7 +89,7 @@ public class ResultInteractorImpl implements ResultInteractor {
     }
 
     public String randomName() {
-        Random r = new Random(); // just create one and keep it around
+        Random r = new Random();
         String alphabet = "abcdefghijklmnopqrstuvwxyz";
 
         final int N = 10;
@@ -132,6 +101,5 @@ public class ResultInteractorImpl implements ResultInteractor {
 
         return randomName + ".jpeg";
     }
-
 
 }

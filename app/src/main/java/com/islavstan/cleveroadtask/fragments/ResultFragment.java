@@ -7,16 +7,23 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.islavstan.cleveroadtask.R;
+import com.islavstan.cleveroadtask.api.ApiClient;
 import com.islavstan.cleveroadtask.db.DBMethods;
 import com.islavstan.cleveroadtask.listeners.UserActionsListener;
 import com.islavstan.cleveroadtask.adapters.MyRecyclerViewAdapter;
+import com.islavstan.cleveroadtask.loader.Callback;
+import com.islavstan.cleveroadtask.loader.QueriesLoader;
+import com.islavstan.cleveroadtask.loader.RetrofitLoaderManager;
+import com.islavstan.cleveroadtask.model.Queries;
 import com.islavstan.cleveroadtask.model.QueriesData;
+import com.islavstan.cleveroadtask.point.GetDataPoint;
 import com.islavstan.cleveroadtask.presenter.ResultPresenter;
 import com.islavstan.cleveroadtask.presenter.ResultPresenterImpl;
 import com.islavstan.cleveroadtask.view.FragmentView;
@@ -26,7 +33,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class ResultFragment extends Fragment implements FragmentView {
+
+public class ResultFragment extends Fragment implements Callback<Queries>, FragmentView {
     List<QueriesData> queriesDataList = new ArrayList<>();
     RecyclerView recyclerView;
     MyRecyclerViewAdapter adapter;
@@ -43,9 +51,19 @@ public class ResultFragment extends Fragment implements FragmentView {
         picasso = Picasso.with(getActivity());
         loadUI(v);
         loadData();
+
         return v;
 
     }
+
+
+    private void initLoader(String search) {
+        final GetDataPoint point = ApiClient.getRetrofit().create(GetDataPoint.class);
+        QueriesLoader loader = new QueriesLoader(getActivity(), point, search);
+        RetrofitLoaderManager.init(getActivity().getLoaderManager(), 0, loader, this);
+
+    }
+
 
     @Override
     public void loadUI(View v) {
@@ -66,7 +84,7 @@ public class ResultFragment extends Fragment implements FragmentView {
             Bundle bundle = new Bundle();
             bundle.putString("src", data.getPagemap().getCseThumbnailData().get(0).getSrc());
             fragment.setArguments(bundle);
-            transaction.replace(R.id.container,fragment,"photo");
+            transaction.replace(R.id.container, fragment, "photo");
             transaction.addToBackStack(null);
             transaction.commit();
         }
@@ -74,18 +92,17 @@ public class ResultFragment extends Fragment implements FragmentView {
         @Override
         public void saveToDB(QueriesData data) {
             presenter.saveToDB(data, db, picasso);
-
         }
 
         @Override
         public void deleteFromDB(QueriesData data) {
-           presenter.deleteFromDb(data, db);
+            presenter.deleteFromDb(data, db);
         }
     };
 
     @Override
     public void loadData() {
-        presenter.loadData(adapter, "");
+
     }
 
     @Override
@@ -99,7 +116,19 @@ public class ResultFragment extends Fragment implements FragmentView {
     }
 
     public void update(String textSearch) {
-        presenter.loadData(adapter, textSearch);
+        initLoader(textSearch);
 
+    }
+
+
+    @Override
+    public void onFailure(Exception ex) {
+        Log.d("stas", ex.getMessage());
+    }
+
+    @Override
+    public void onSuccess(Queries result) {
+        getActivity().getLoaderManager().destroyLoader(0);
+        presenter.loadData(adapter, result);
     }
 }
