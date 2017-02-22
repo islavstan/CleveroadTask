@@ -1,5 +1,6 @@
 package com.islavstan.cleveroadtask.adapters;
 
+import android.content.Context;
 import android.net.Uri;
 import android.os.Environment;
 import android.support.v7.widget.RecyclerView;
@@ -11,13 +12,17 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.islavstan.cleveroadtask.R;
+import com.islavstan.cleveroadtask.fragments.FavoriteFragment;
 import com.islavstan.cleveroadtask.listeners.UserActionsListener;
 import com.islavstan.cleveroadtask.model.QueriesData;
+import com.islavstan.cleveroadtask.view.FragmentView;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -25,10 +30,15 @@ public class MyFavoriteRecAdapter extends RecyclerView.Adapter<MyFavoriteRecAdap
     private List<QueriesData> queriesDataList;
     private UserActionsListener mItemListener;
     String root = Environment.getExternalStorageDirectory().toString();
+    int next = 10;
+   FavoriteFragment context;
 
-    public MyFavoriteRecAdapter(List<QueriesData> queriesDataList, UserActionsListener mItemListener) {
+    List<QueriesData> allItemsList = new ArrayList<>();
+    public MyFavoriteRecAdapter(List<QueriesData> queriesDataList, UserActionsListener mItemListener, FavoriteFragment context) {
         this.queriesDataList = queriesDataList;
         this.mItemListener = mItemListener;
+        this.context = context;
+
     }
 
 
@@ -52,12 +62,35 @@ public class MyFavoriteRecAdapter extends RecyclerView.Adapter<MyFavoriteRecAdap
     }
 
     public void loadData(List<QueriesData> queriesDatas) {
-        if (queriesDatas.size() != 0) {
+      /*  if (queriesDatas.size() != 0) {
             queriesDataList.clear();
             queriesDataList.addAll(queriesDatas);
             notifyDataSetChanged();
+        }*/
+
+        allItemsList = queriesDatas;
+        for (int i = 0; i < next; i++) {
+            queriesDataList.add(allItemsList.get(i));
         }
+        notifyDataSetChanged();
+
     }
+ /*   public void loadMore() {
+       *//* if(queriesDataList.size()!=allItemsList.size()) {
+            for (int i = next; i < next + 10; i++) {
+                queriesDataList.add(allItemsList.get(i));
+                notifyItemInserted(i);
+                next++;
+            }
+
+
+        }*//*
+
+
+        context.setLoading(false);
+    }
+*/
+
 
     @Override
     public int getItemCount() {

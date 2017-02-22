@@ -10,6 +10,13 @@ public class Queries {
     @SerializedName("items")
   List<QueriesData>queriesDataList;
 
+   @SerializedName("queries")
+   Qr qr;
+
+    public Qr getQr() {
+        return qr;
+    }
+
     public List<QueriesData> getQueriesDataList() {
         return queriesDataList;
     }

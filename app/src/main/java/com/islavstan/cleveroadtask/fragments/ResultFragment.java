@@ -41,7 +41,7 @@ public class ResultFragment extends Fragment implements Callback<Queries>, Fragm
     ResultPresenter presenter;
     DBMethods db;
     Picasso picasso;
-
+    String search;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -57,9 +57,9 @@ public class ResultFragment extends Fragment implements Callback<Queries>, Fragm
     }
 
 
-    private void initLoader(String search) {
+    private void initLoader(String search, int index) {
         final GetDataPoint point = ApiClient.getRetrofit().create(GetDataPoint.class);
-        QueriesLoader loader = new QueriesLoader(getActivity(), point, search);
+        QueriesLoader loader = new QueriesLoader(getActivity(), point, search, index);
         RetrofitLoaderManager.init(getActivity().getLoaderManager(), 0, loader, this);
 
     }
@@ -73,6 +73,26 @@ public class ResultFragment extends Fragment implements Callback<Queries>, Fragm
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(adapter);
+
+        adapter.setLoadMoreListener(new MyRecyclerViewAdapter.OnLoadMoreListener() {
+            @Override
+            public void onLoadMore() {
+                recyclerView.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        int index = queriesDataList.size() - 1;
+                        Log.d("stas", "loadMore(index)");
+                        loadMore(index);
+                    }
+                });
+            }
+        });
+
+    }
+
+    private void loadMore(int index) {
+        initLoader(search, index);
+
     }
 
     UserActionsListener listener = new UserActionsListener() {
@@ -100,10 +120,6 @@ public class ResultFragment extends Fragment implements Callback<Queries>, Fragm
         }
     };
 
-    @Override
-    public void loadData() {
-
-    }
 
     @Override
     public void showSuccessSaveToast() {
@@ -116,7 +132,8 @@ public class ResultFragment extends Fragment implements Callback<Queries>, Fragm
     }
 
     public void update(String textSearch) {
-        initLoader(textSearch);
+        search = textSearch;
+        initLoader(textSearch, 1);
 
     }
 
@@ -124,6 +141,7 @@ public class ResultFragment extends Fragment implements Callback<Queries>, Fragm
     @Override
     public void onFailure(Exception ex) {
         Log.d("stas", ex.getMessage());
+
     }
 
     @Override
@@ -131,4 +149,10 @@ public class ResultFragment extends Fragment implements Callback<Queries>, Fragm
         getActivity().getLoaderManager().destroyLoader(0);
         presenter.loadData(adapter, result);
     }
+
+    @Override
+    public void loadData() {
+
+    }
+
 }

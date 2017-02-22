@@ -24,6 +24,8 @@ import java.util.List;
 public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAdapter.CustomViewHolder> {
     private List<QueriesData> queriesDataList;
     private UserActionsListener mItemListener;
+    OnLoadMoreListener loadMoreListener;
+    boolean isLoading = false, isMoreDataAvailable = true;
 
     public MyRecyclerViewAdapter(List<QueriesData> queriesDataList, UserActionsListener mItemListener) {
         this.queriesDataList = queriesDataList;
@@ -43,6 +45,12 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
 
     @Override
     public void onBindViewHolder(final MyRecyclerViewAdapter.CustomViewHolder holder, int position) {
+        if (position >= getItemCount() - 1 && isMoreDataAvailable && !isLoading && loadMoreListener != null) {
+            isLoading = true;
+            loadMoreListener.onLoadMore();
+        }
+
+
         final QueriesData data = queriesDataList.get(position);
         holder.checkBox.setOnCheckedChangeListener(null);
         holder.checkBox.setChecked(data.isSelected());
@@ -76,12 +84,32 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
             queriesDataList.clear();
             queriesDataList.addAll(queriesDatas);
             notifyDataSetChanged();
+            isLoading = false;
         }
     }
+
 
     @Override
     public int getItemCount() {
         return queriesDataList.size();
+    }
+
+    public void setMoreDataAvailable(boolean moreDataAvailable) {
+        isMoreDataAvailable = moreDataAvailable;
+    }
+
+    public void addMore(List<QueriesData> queriesDatas) {
+        queriesDataList.addAll(queriesDatas);
+        notifyDataSetChanged();
+        isLoading = false;
+    }
+
+    public interface OnLoadMoreListener {
+        void onLoadMore();
+    }
+
+    public void setLoadMoreListener(OnLoadMoreListener loadMoreListener) {
+        this.loadMoreListener = loadMoreListener;
     }
 
 
@@ -104,7 +132,6 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
         @Override
         public void onClick(View view) {
             mItemListener.openImage(queriesDataList.get(getAdapterPosition()));
-
 
         }
     }

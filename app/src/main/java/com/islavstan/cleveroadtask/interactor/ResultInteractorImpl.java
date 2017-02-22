@@ -14,6 +14,7 @@ import com.islavstan.cleveroadtask.api.ApiConstant;
 import com.islavstan.cleveroadtask.db.DBMethods;
 import com.islavstan.cleveroadtask.model.Queries;
 import com.islavstan.cleveroadtask.model.QueriesData;
+import com.islavstan.cleveroadtask.model.RequestData;
 import com.islavstan.cleveroadtask.point.GetDataPoint;
 import com.squareup.picasso.Picasso;
 
@@ -37,8 +38,17 @@ public class ResultInteractorImpl implements ResultInteractor {
     @Override
     public void loadData(MyRecyclerViewAdapter adapter, Queries queries) {
         List<QueriesData> queriesDatas = queries.getQueriesDataList();
-        if (queriesDatas != null) {
-            adapter.loadData(queriesDatas);
+        RequestData data = queries.getQr().getRequestDatas().get(0);
+        int startIndex = data.getStartIndex();
+        if (startIndex == 1) {
+            if (queriesDatas != null) {
+                adapter.loadData(queriesDatas);
+            }
+        } else {
+            Log.d("stas", "LoadMore");
+            if (queriesDatas != null) {
+                adapter.addMore(queriesDatas);
+            }
         }
     }
 

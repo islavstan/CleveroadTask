@@ -34,7 +34,9 @@ public class FavoriteFragment  extends Fragment implements FragmentView {
     MyFavoriteRecAdapter adapter;
     FavoritePresenter presenter;
     DBMethods db;
-    Picasso picasso;
+    LinearLayoutManager mLayoutManager;
+    private boolean isLoading = false;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -54,11 +56,29 @@ public class FavoriteFragment  extends Fragment implements FragmentView {
     @Override
     public void loadUI(View v) {
         recyclerView = (RecyclerView) v.findViewById(R.id.recycler);
-        adapter = new MyFavoriteRecAdapter(queriesDataList, listener);
-        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
+        adapter = new MyFavoriteRecAdapter(queriesDataList, listener, this);
+        mLayoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(adapter);
+
+      /*  recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                int visibleItemCount = mLayoutManager.getChildCount();//смотрим сколько элементов на экране
+                int totalItemCount = mLayoutManager.getItemCount();//сколько всего элементов
+                int firstVisibleItems = mLayoutManager.findFirstVisibleItemPosition();//какая позиция первого элемента
+                if (!isLoading) {
+                    if ((visibleItemCount + firstVisibleItems) >= totalItemCount) {
+                        isLoading = true;
+                        adapter.loadMore();
+                    }
+                }
+            }
+        });*/
+
+
     }
 
 
@@ -104,4 +124,13 @@ public class FavoriteFragment  extends Fragment implements FragmentView {
     public void showSuccessDeleteToast() {
 
     }
+
+    public boolean isLoading() {
+        return isLoading;
+    }
+
+    public void setLoading(boolean loading) {
+        isLoading = loading;
+    }
+
 }
