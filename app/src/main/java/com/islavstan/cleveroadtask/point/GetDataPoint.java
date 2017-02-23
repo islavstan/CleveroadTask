@@ -10,7 +10,7 @@ import retrofit2.http.Query;
 
 public interface GetDataPoint {
     @GET("v1?")
-  Queries getData(@Query("key") String key, @Query("cx") String cx, @Query("q") String q, @Query("num") int num, @Query("start")int start);
+    Queries getData(@Query("key") String key, @Query("cx") String cx, @Query("q") String q, @Query("num") int num, @Query("start") int start);
 
 }
 

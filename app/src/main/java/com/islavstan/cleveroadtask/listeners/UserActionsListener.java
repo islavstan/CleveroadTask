@@ -1,7 +1,7 @@
 package com.islavstan.cleveroadtask.listeners;
 
 
-import com.islavstan.cleveroadtask.adapters.MyFavoriteRecAdapter;
+
 import com.islavstan.cleveroadtask.model.QueriesData;
 
 public interface UserActionsListener {

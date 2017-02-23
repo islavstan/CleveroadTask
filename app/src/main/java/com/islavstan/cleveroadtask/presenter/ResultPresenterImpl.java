@@ -35,7 +35,7 @@ public class ResultPresenterImpl implements ResultPresenter, ResultInteractor.Re
 
     @Override
     public void loadData(MyRecyclerViewAdapter adapter, Queries queries) {
-        resultInteractor.loadData(adapter,queries);
+        resultInteractor.loadData(adapter, queries);
     }
 
     @Override

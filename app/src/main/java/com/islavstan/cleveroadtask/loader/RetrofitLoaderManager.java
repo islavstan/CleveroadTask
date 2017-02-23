@@ -36,7 +36,6 @@ public class RetrofitLoaderManager {
             @Override
             public void onLoaderReset(Loader<Response<D>> loader) {
 
-                //Nothing to do here
             }
         });
     }

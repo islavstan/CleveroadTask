@@ -14,7 +14,7 @@ public interface FavoritePresenter {
 
     void openImage();
 
-    void deleteFromDb(int id,  DBMethods db, int position, MyFavoriteRecAdapter adapter);
+    void deleteFromDb(int id, DBMethods db, int position, MyFavoriteRecAdapter adapter);
 
     void loadMore(int index, DBMethods db, MyFavoriteRecAdapter adapter);
 }

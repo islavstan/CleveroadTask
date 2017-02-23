@@ -73,7 +73,6 @@ public class FavoriteFragment  extends Fragment implements FragmentView {
                     @Override
                     public void run() {
                         int index = queriesDataList.size() - 1;
-                        //Log.d("stas", "loadMore(index)");
                         if (index >= 10)
                             loadMore(index);
                     }
