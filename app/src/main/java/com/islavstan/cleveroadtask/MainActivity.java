@@ -5,11 +5,16 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 
 import com.islavstan.cleveroadtask.adapters.MyViewPagerAdapter;
 import com.islavstan.cleveroadtask.db.DBMethods;
 import com.islavstan.cleveroadtask.view.MainView;
 import com.lapism.searchview.SearchView;
+
+import java.util.concurrent.TimeUnit;
+
+import rx.android.schedulers.AndroidSchedulers;
 
 public class MainActivity extends AppCompatActivity implements MainView {
 
@@ -85,20 +90,15 @@ public class MainActivity extends AppCompatActivity implements MainView {
     @Override
     public void loadSearchView() {
         searchView = (SearchView) findViewById(R.id.searchView);
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                return false;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                adapter.refreshTab(tabPositionSelected, newText);
+        RxSearch.fromSearchView(searchView)
+                .debounce(300, TimeUnit.MILLISECONDS)
+                .filter(item -> item.length() > 1)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(query -> {
+                    adapter.refreshTab(tabPositionSelected, query);
+                }, error -> Log.d("stas", error.getMessage()));
 
 
-                return false;
-            }
-        });
     }
 
     private void refreshTab(int position, String textSearch) {
